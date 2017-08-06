@@ -3,6 +3,8 @@
 #===========================Basics================================#
 attach(mtcars)
 
+# It is not recommended using attach() function!!!
+
 head(mtcars[, c("hp", "mpg")])
 plot(hp, mpg)
 
