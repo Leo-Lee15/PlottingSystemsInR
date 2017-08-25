@@ -15,6 +15,19 @@ theme_plot2 <- theme(
   strip.text.x = element_text(size=18,face='bold')
 )
 
+library(ggthemes)
+my_gg_theme <- function() {
+  theme_fivethirtyeight() +
+  theme(plot.background = element_rect(fill = "#FCF0E1"),
+        panel.background = element_rect(fill = "#FCF0E1"),
+        legend.background = element_blank())
+}
+
+
+
+
+
+
 ###-------------------------------------------------------------
 ### Most used ggplot2 theme for plotting maps------------------
 ###-------------------------------------------------------------
