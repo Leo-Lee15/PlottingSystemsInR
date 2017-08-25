@@ -45,6 +45,112 @@ f +
   scale_fill_manual(values = c("#999999", "#E69F00", "#56B4E9", "tomato2", "skyblue"))
 
 
+##---------------------------------------------------------------------------------------
+
+###-----------------------------------------------
+### ggplot2绘制美观的柱状图 ------------------------
+###-----------------------------------------------
+
+## 绘制柱状图
+library(janeaustenr)
+library(tidyverse)
+library(tidytext)
+
+austen_books() %>%
+  select(2, 1) %>%
+  unnest_tokens(word, text, token = "ngrams", n = 2) %>%
+  print() %>% 
+  # A token is a meaningful unit of text, most often a word, 
+  # that we are interested in using for further analysis, 
+  # and tokenization is the process of splitting text into tokens.
+  count(word, sort = TRUE) %>% 
+  top_n(10) ->
+  top_10_austen_bigrams
+
+library(ggthemes)
+win.graph()
+
+## 一元映射
+top_10_austen_bigrams %>% 
+  print() %>% 
+  ggplot(aes(x = reorder(word, n), y = n)) +
+  geom_bar(stat = "identity", fill = "#E7962A") +  # `柱子`填充色为“橘黄色”
+  coord_flip() +
+  theme_fivethirtyeight() +
+  theme(panel.background = element_rect(fill = "#FCF0E1"), # 图片背景填充色为“土黄色”
+        plot.background = element_rect(fill = "#FCF0E1")) +
+  geom_text(aes(label = n), hjust = -0.3) + # hjust/vjust调整`标签`的位置
+  # 标题
+  labs(title = "Words Frequency Count",
+       subtitle = "Made in 2017-08-25",
+       caption = "Source: janeaustenr package",
+       xlab = "", ylab = "")
+
+## 二元映射
+austen_books() %>%
+  select(2, 1) %>%
+  filter(book %in% c("Sense & Sensibility", "Pride & Prejudice")) %>% 
+  unnest_tokens(word, text, token = "ngrams", n = 1) %>%
+  anti_join(stop_words, by = "word") %>% 
+  print() %>% 
+  group_by(book) %>% 
+  count(book, word, sort = TRUE) %>% 
+  top_n(15) %>% 
+  ungroup() %>% 
+  mutate(n2 = if_else(book == "Sense & Sensibility", -n, n)) %>% 
+  print(n = Inf) %>% 
+  ggplot(aes(x = reorder(word, n2), y = n2, fill = book)) +
+  geom_bar(stat = "identity") +
+  theme_fivethirtyeight() +
+  theme(panel.background = element_rect(fill = "#FCF0E1"), # 图片背景填充色为“土黄色”
+        plot.background = element_rect(fill = "#FCF0E1"),
+        legend.background = element_blank()) +
+  # 标题
+  labs(title = "Words Frequency Count 2",
+       subtitle = "Made in 2017-08-25",
+       caption = "Source: janeaustenr package",
+       xlab = "", ylab = "",
+       fill = "") + # fill = ""表示删掉`图例`的标题
+  scale_fill_manual(values = c("#F26B68", "#0991DB")) +
+  coord_flip() +
+  geom_text(aes(label = n), hjust = -0.3) # hjust/vjust调整`标签`的位置，这里用hjust = -0.3存在问题，因为`标签都会向右偏`
+
+# 因此采用另一种方法，分别给`Sense & Sensibility`和`Pride & Prejudice`绘制标签
+austen_books() %>%
+  select(2, 1) %>%
+  filter(book %in% c("Sense & Sensibility", "Pride & Prejudice")) %>% 
+  unnest_tokens(word, text, token = "ngrams", n = 1) %>%
+  anti_join(stop_words, by = "word") %>% 
+  print() %>% 
+  group_by(book) %>% 
+  count(book, word, sort = TRUE) %>% 
+  top_n(15) %>% 
+  ungroup() %>% 
+  mutate(n2 = if_else(book == "Sense & Sensibility", -n, n)) ->
+  austen_2_books
+print(austen_2_books)  
+
+austen_2_books %>% 
+  ggplot(aes(x = reorder(word, n2), y = n2, fill = book)) +
+  geom_bar(stat = "identity") +
+  theme_fivethirtyeight() +
+  theme(panel.background = element_rect(fill = "#FCF0E1"), # 图片背景填充色为“土黄色”
+        plot.background = element_rect(fill = "#FCF0E1"),
+        legend.background = element_blank()) +
+  # 标题
+  labs(title = "Words Frequency Count 2",
+       subtitle = "Made in 2017-08-25",
+       caption = "Source: janeaustenr package",
+       xlab = "", ylab = "",
+       fill = "") +
+  scale_fill_manual(values = c("#F26B68", "#0991DB")) +
+  coord_flip() +
+  geom_text(data = filter(austen_2_books, book == "Sense & Sensibility"), 
+            aes(x = , y = , label = n), hjust = 1.5) +
+  geom_text(data = filter(austen_2_books, book != "Sense & Sensibility"), 
+            aes(x = , y = , label = n), hjust = -0.5)
+
+
 
 
 
