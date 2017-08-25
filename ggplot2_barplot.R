@@ -112,6 +112,7 @@ austen_books() %>%
        xlab = "", ylab = "",
        fill = "") + # fill = ""表示删掉`图例`的标题
   scale_fill_manual(values = c("#F26B68", "#0991DB")) +
+  scale_y_continuous(position = "right") +
   coord_flip() +
   geom_text(aes(label = n), hjust = -0.3) # hjust/vjust调整`标签`的位置，这里用hjust = -0.3存在问题，因为`标签都会向右偏`
 
@@ -144,6 +145,7 @@ austen_2_books %>%
        xlab = "", ylab = "",
        fill = "") +
   scale_fill_manual(values = c("#F26B68", "#0991DB")) +
+  scale_y_continuous(position = "right") +
   coord_flip() +
   geom_text(data = filter(austen_2_books, book == "Sense & Sensibility"), 
             aes(x = , y = , label = n), hjust = 1.5) +
